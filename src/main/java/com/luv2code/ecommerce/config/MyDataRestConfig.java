@@ -14,8 +14,10 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
+import com.luv2code.ecommerce.entity.Country;
 import com.luv2code.ecommerce.entity.Product;
 import com.luv2code.ecommerce.entity.ProductCategory;
+import com.luv2code.ecommerce.entity.State;
 
 @Configuration
 public class MyDataRestConfig implements RepositoryRestConfigurer {
@@ -34,19 +36,23 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
 		
 		HttpMethod[] unsupportedActions = {HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE};
 		
-		//disable http method for Product: put, post, delete
-		config.getExposureConfiguration()
-		.forDomainType(Product.class)
-		.withItemExposure((metadata, httpMethods) -> httpMethods.disable(unsupportedActions))
-		.withCollectionExposure((metdata, httpMethods ) -> httpMethods.disable(unsupportedActions));
-		
+				
 		//disable http method for ProductCategory: put, post, delete
-		config.getExposureConfiguration()
-		  .forDomainType(ProductCategory.class)
-		  .withItemExposure((metadata, httpMethods) -> httpMethods.disable(unsupportedActions))
-		  .withCollectionExposure((metdata, httpMethods ) -> httpMethods.disable(unsupportedActions));
+		disableHttpMethods(Product.class, config, unsupportedActions);
+		disableHttpMethods(ProductCategory.class, config, unsupportedActions);
+		disableHttpMethods(State.class, config, unsupportedActions);
+		disableHttpMethods(Country.class, config, unsupportedActions);
 		
 		exposeIds(config);
+	}
+
+
+
+	private void disableHttpMethods(Class theClass, RepositoryRestConfiguration config, HttpMethod[] unsupportedActions) {
+		config.getExposureConfiguration()
+		  .forDomainType(theClass)
+		  .withItemExposure((metadata, httpMethods) -> httpMethods.disable(unsupportedActions))
+		  .withCollectionExposure((metdata, httpMethods ) -> httpMethods.disable(unsupportedActions));
 	}
 
 
